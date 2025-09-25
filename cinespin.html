@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CineSpin | Movie Wheel & Memes</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" href="images/rate-movie_16310584.png" type="image/png">
+    <style>
+        :root {
+            --primary: #8a2be2;
+            --secondary: #ff00c8;
+            --accent: #00ccff;
+            --dark: #0f0f1e;
+            --darker: #070710;
+            --light: #f8f8ff;
+            --card-bg: rgba(25, 25, 50, 0.7);
+            --glow-color: var(--accent);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--darker), var(--dark));
+            color: var(--light);
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        header {
+            text-align: center;
+            padding: 20px 0;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            font-size: 3rem;
+            background: linear-gradient(to right, var(--primary), var(--secondary), var(--accent));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 15px rgba(138, 43, 226, 0.5);
+            margin-bottom: 10px;
+            letter-spacing: 2px;
+        }
+
+        .subtitle {
+            color: var(--light);
+            font-size: 1.2rem;
+            opacity: 0.8;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        section {
+            background: rgba(15, 15, 30, 0.7);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 40px;
+            box-shadow: 0 0 30px rgba(138, 43, 226, 0.3);
+            border: 1px solid rgba(138, 43, 226, 0.2);
+            backdrop-filter: blur(10px);
+        }
+
+        h2 {
+            font-size: 2rem;
+            margin-bottom: 25px;
+            text-align: center;
+            color: var(--accent);
+            text-shadow: 0 0 10px rgba(0, 204, 255, 0.5);
+        }
+
+        /* Wheel Section */
+        .wheel-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .wheel-wrapper {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            margin-bottom: 40px;
+        }
+
+        .wheel {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: conic-gradient(
+                from 0deg,
+                #ff6b6b, #ff8e8e,
+                #ffb142, #ffda79,
+                #78e08f, #b8e994,
+                #7ed6df, #e056fd,
+                #686de0, #4834d4
+            );
+            position: relative;
+            overflow: hidden;
+            box-shadow: 
+                0 0 20px var(--primary),
+                0 0 40px var(--secondary),
+                inset 0 0 20px rgba(255, 255, 255, 0.5);
+            transition: transform 3s cubic-bezier(0.17, 0.67, 0.83, 0.67);
+        }
+
+        .wheel-center {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            background: var(--dark);
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+            box-shadow: 0 0 15px var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent);
+            font-size: 1.5rem;
+            border: 2px solid var(--accent);
+        }
+
+        .wheel-pointer {
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 40px;
+            background: var(--accent);
+            clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+            filter: drop-shadow(0 0 5px var(--accent));
+            z-index: 11;
+        }
+
+        .spin-button {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.2rem;
+            border-radius: 50px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 15px var(--primary);
+        }
+
+        .spin-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px var(--primary), 0 0 30px var(--secondary);
+        }
+
+        .result-card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 30px;
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: 0 0 20px rgba(0, 204, 255, 0.3);
+            border: 1px solid rgba(0, 204, 255, 0.2);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease;
+        }
+
+        .result-card.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .movie-title {
+            font-size: 1.8rem;
+            color: var(--accent);
+            margin-bottom: 10px;
+        }
+
+        .movie-fact {
+            font-size: 1.1rem;
+            line-height: 1.5;
+            margin-bottom: 15px;
+        }
+
+        /* Meme Zone */
+        .meme-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 25px;
+            margin-top: 20px;
+        }
+
+        .meme-card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 15px rgba(138, 43, 226, 0.2);
+            height: 280px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .meme-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 25px var(--primary);
+        }
+
+        .meme-img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .meme-card:hover .meme-img {
+            transform: scale(1.1);
+        }
+
+        .meme-actions {
+            display: flex;
+            justify-content: space-around;
+            padding: 15px;
+            background: rgba(15, 15, 30, 0.8);
+        }
+
+        .action-btn {
+            background: transparent;
+            border: none;
+            color: var(--light);
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            padding: 8px 15px;
+            border-radius: 50px;
+        }
+
+        .action-btn:hover {
+            color: var(--accent);
+            transform: translateY(-3px);
+            text-shadow: 0 0 10px var(--accent);
+        }
+
+        .download-btn:hover {
+            color: var(--secondary);
+            text-shadow: 0 0 10px var(--secondary);
+        }
+
+        .share-btn:hover {
+            color: #00cc00;
+            text-shadow: 0 0 10px #00cc00;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: var(--accent);
+            font-size: 1.2rem;
+        }
+
+        .error {
+            text-align: center;
+            padding: 20px;
+            color: #ff6b6b;
+            font-size: 1.2rem;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 20px;
+            margin-top: 40px;
+            color: var(--light);
+            opacity: 0.7;
+            font-size: 0.9rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.2rem;
+            }
+            
+            h2 {
+                font-size: 1.8rem;
+            }
+            
+            .meme-grid {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            }
+            
+            .wheel-wrapper {
+                width: 250px;
+                height: 250px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            section {
+                padding: 20px 15px;
+            }
+            
+            .meme-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .wheel-wrapper {
+                width: 200px;
+                height: 200px;
+            }
+        }
+
+        /* Animations */
+        @keyframes glow {
+            0% { box-shadow: 0 0 10px var(--primary); }
+            50% { box-shadow: 0 0 30px var(--primary), 0 0 40px var(--secondary); }
+            100% { box-shadow: 0 0 10px var(--primary); }
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .glow {
+            animation: glow 2s infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>CineSpin</h1>
+            <p class="subtitle">Spin the wheel for movie suggestions and explore famous movie memes</p>
+        </header>
+
+        <section id="wheel-section">
+            <h2>SPIN THE MOVIE WHEEL</h2>
+            <div class="wheel-container">
+                <div class="wheel-wrapper">
+                    <div class="wheel-pointer"></div>
+                    <div class="wheel" id="movie-wheel">
+                        <div class="wheel-center">
+                            <i class="fas fa-film"></i>
+                        </div>
+                    </div>
+                </div>
+                <button class="spin-button" id="spin-btn">SPIN WHEEL</button>
+                <div class="result-card" id="result-card">
+                    <h3 class="movie-title" id="movie-title">Movie Title</h3>
+                    <p class="movie-fact" id="movie-fact">Fun fact about the movie will appear here.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="meme-section">
+            <h2>MEME & GIF ZONE</h2>
+            <div class="meme-grid" id="meme-grid">
+                <div class="loading" id="meme-loading">
+                    <i class="fas fa-spinner fa-spin"></i> Loading memes...
+                </div>
+            </div>
+        </section>
+
+        <footer>
+           <p>&copy; 2025 <span style="color: #79b8f3;">Cine</span>Rate. All rights reserved.</p>
+        </footer>
+    </div>
+
+    <script>
+        // Movie data for the wheel
+        const movies = [
+            {
+                title: "The Shawshank Redemption",
+                fact: "The poster for The Shawshank Redemption features a mistake - Tim Robbins' character is not wearing a tie in that scene in the movie."
+            },
+            {
+                title: "The Dark Knight",
+                fact: "Heath Ledger actually locked himself in a hotel room for a month to develop the Joker's character and voice."
+            },
+            {
+                title: "Pulp Fiction",
+                fact: "The briefcase contents were never specified in the script. The glow was achieved by placing a lightbulb and a battery inside."
+            },
+            {
+                title: "Inception",
+                fact: "The top at the end was originally supposed to fall over, but Leonardo DiCaprio suggested leaving it ambiguous."
+            },
+            {
+                title: "The Matrix",
+                fact: "The code that streams down the screen is actually sushi recipes from a Japanese cookbook."
+            },
+            {
+                title: "Avengers: Endgame",
+                fact: "The movie was shot under the fake title 'Mary Lou' to avoid spoilers and leaks."
+            },
+            {
+                title: "Interstellar",
+                fact: "The cornfield scene was actually grown for the movie and later sold for profit."
+            },
+            {
+                title: "Parasite",
+                fact: "The production designer actually built the house from the film in a parking lot, with different sections at different scales."
+            }
+        ];
+
+        // Tenor API Configuration
+        const TENOR_API_KEY = 'AIzaSyDeMc4D0DIKh_m3namiIrxIg843m3cfIsw'; 
+        const TENOR_BASE_URL = 'https://tenor.googleapis.com/v2';
+        const MEME_LIMIT = 50;
+
+        // DOM Elements
+        const wheel = document.getElementById('movie-wheel');
+        const spinBtn = document.getElementById('spin-btn');
+        const resultCard = document.getElementById('result-card');
+        const movieTitle = document.getElementById('movie-title');
+        const movieFact = document.getElementById('movie-fact');
+        const memeGrid = document.getElementById('meme-grid');
+        const memeLoading = document.getElementById('meme-loading');
+
+        // Fetch memes from Tenor API
+        async function fetchMemes() {
+            try {
+                const response = await fetch(
+                    `${TENOR_BASE_URL}/search?q=funny+movies&key=${TENOR_API_KEY}&limit=${MEME_LIMIT}&media_filter=gif,tinygif`
+                );
+                
+                if (!response.ok) {
+                    throw new Error('Failed to fetch memes');
+                }
+                
+                const data = await response.json();
+                return data.results;
+            } catch (error) {
+                console.error('Error fetching memes:', error);
+                memeLoading.innerHTML = `<div class="error">Failed to load memes. Please try again later.</div>`;
+                return [];
+            }
+        }
+
+        // Initialize meme cards with API data
+        async function initMemeCards() {
+            const memes = await fetchMemes();
+            
+            // Clear loading message
+            memeLoading.style.display = 'none';
+            
+            if (memes.length === 0) {
+                // Show error if no memes were fetched
+                memeGrid.innerHTML = `<div class="error">No memes available. Please try again later.</div>`;
+                return;
+            }
+            
+            // Create meme cards
+            memes.forEach(meme => {
+                const card = document.createElement('div');
+                card.className = 'meme-card';
+                
+                // Use the first available GIF format
+                const gifUrl = meme.media_formats.gif.url || meme.media_formats.tinygif.url;
+                
+                card.innerHTML = `
+                    <img src="${gifUrl}" alt="${meme.content_description}" class="meme-img">
+                    <div class="meme-actions">
+                        <button class="action-btn download-btn" title="Download" onclick="downloadGif('${gifUrl}', '${meme.content_description}')">
+                            <i class="fas fa-download"></i>
+                        </button>
+                        <button class="action-btn share-btn" title="Share on WhatsApp" onclick="shareOnWhatsApp('${gifUrl}', '${meme.content_description}')">
+                            <i class="fab fa-whatsapp"></i>
+                        </button>
+                        <button class="action-btn share-btn" title="Share on Twitter" onclick="shareOnTwitter('${gifUrl}', '${meme.content_description}')">
+                            <i class="fab fa-twitter"></i>
+                        </button>
+                    </div>
+                `;
+                
+                memeGrid.appendChild(card);
+            });
+        }
+
+        // Download GIF function
+        function downloadGif(url, filename) {
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `${filename}.gif`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // Share on WhatsApp function
+        function shareOnWhatsApp(url, text) {
+            const shareUrl = `https://wa.me/?text=${encodeURIComponent(`Check out this movie meme: ${text} ${url}`)}`;
+            window.open(shareUrl, '_blank');
+        }
+
+        // Share on Twitter function
+        function shareOnTwitter(url, text) {
+            const shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(`Check out this movie meme: ${text}`)}&url=${encodeURIComponent(url)}`;
+            window.open(shareUrl, '_blank');
+        }
+
+        // Spin the wheel
+        spinBtn.addEventListener('click', () => {
+            // Reset wheel and hide result card
+            wheel.style.transition = 'none';
+            wheel.style.transform = 'rotate(0deg)';
+            resultCard.classList.remove('visible');
+            
+            // Force reflow
+            void wheel.offsetWidth;
+            
+            // Calculate random rotation (multiple full rotations plus a segment)
+            const segments = movies.length;
+            const segmentAngle = 360 / segments;
+            const extraRotations = 5; // Number of full rotations before stopping
+            const randomSegment = Math.floor(Math.random() * segments);
+            const rotation = (extraRotations * 360) + (randomSegment * segmentAngle);
+            
+            // Apply rotation with smooth transition
+            wheel.style.transition = `transform 4s cubic-bezier(0.17, 0.67, 0.83, 0.67)`;
+            wheel.style.transform = `rotate(${rotation}deg)`;
+            
+            // Show result after animation completes
+            setTimeout(() => {
+                const selectedMovie = movies[randomSegment];
+                movieTitle.textContent = selectedMovie.title;
+                movieFact.textContent = selectedMovie.fact;
+                resultCard.classList.add('visible');
+            }, 4100);
+        });
+
+        // Initialize the page
+        initMemeCards();
+    </script>
+</body>
+</html>

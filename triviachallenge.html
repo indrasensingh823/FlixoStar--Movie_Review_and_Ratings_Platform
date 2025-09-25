@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cinematic Trivia Challenge</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Oxanium:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="icon" href="images/rate-movie_16310584.png" type="image/png">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0c0c13 0%, #1a1a2e 100%);
+            color: #e6e6e6;
+            min-height: 100vh;
+            font-family: 'Oxanium', sans-serif;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+            animation: fadeIn 1s ease-out;
+            border: 1px solid rgba(94, 23, 235, 0.3);
+        }
+
+        h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3.2rem;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #ff00cc, #3333ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 10px rgba(255, 0, 204, 0.5);
+            letter-spacing: 2px;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.8;
+            margin-top: 10px;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 25px;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .quiz-container {
+            background: linear-gradient(to bottom, #1e2030, #161622);
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(94, 23, 235, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .quiz-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .score-container {
+            display: flex;
+            align-items: center;
+            font-size: 1.5rem;
+            color: #fff;
+            text-shadow: 0 0 10px rgba(51, 51, 255, 0.7);
+        }
+
+        .score-label {
+            font-size: 1rem;
+            margin-right: 10px;
+            opacity: 0.8;
+        }
+
+        .question-count {
+            font-size: 1rem;
+            opacity: 0.8;
+        }
+
+        .question-container {
+            min-height: 200px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 0, 204, 0.2);
+        }
+
+        .question {
+            font-size: 1.5rem;
+            line-height: 1.5;
+        }
+
+        .options-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        @media (max-width: 480px) {
+            .options-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .option {
+            background: linear-gradient(45deg, #1a1a2e, #0f0f1a);
+            border: 2px solid rgba(94, 23, 235, 0.5);
+            border-radius: 8px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.1rem;
+            text-align: center;
+        }
+
+        .option:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(94, 23, 235, 0.4);
+            border-color: rgba(255, 0, 204, 0.5);
+            background: linear-gradient(45deg, #222240, #16162a);
+        }
+
+        .option.correct {
+            background: linear-gradient(45deg, rgba(0, 200, 83, 0.2), rgba(0, 150, 63, 0.3));
+            border-color: #00c853;
+            color: #00c853;
+        }
+
+        .option.incorrect {
+            background: linear-gradient(45deg, rgba(255, 0, 0, 0.2), rgba(180, 0, 0, 0.3));
+            border-color: #ff1744;
+            color: #ff1744;
+        }
+
+        .controls {
+            margin-top: 25px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .btn {
+            background: linear-gradient(45deg, #ff00cc, #3333ff);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 30px;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            box-shadow: 0 5px 15px rgba(51, 51, 255, 0.4);
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(255, 0, 204, 0.5);
+        }
+
+        .btn:active {
+            transform: translateY(1px);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .feedback-container {
+            min-height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .feedback {
+            font-size: 1.5rem;
+            text-align: center;
+            padding: 15px 25px;
+            border-radius: 10px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .feedback.show {
+            opacity: 1;
+        }
+
+        .feedback.correct {
+            background: rgba(0, 200, 83, 0.2);
+            color: #00c853;
+            border: 1px solid #00c853;
+        }
+
+        .feedback.incorrect {
+            background: rgba(255, 0, 0, 0.2);
+            color: #ff1744;
+            border: 1px solid #ff1744;
+        }
+
+        .leaderboard {
+            background: linear-gradient(to bottom, #1e2030, #161622);
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(94, 23, 235, 0.3);
+        }
+
+        .leaderboard-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            text-align: center;
+            background: linear-gradient(45deg, #ff00cc, #3333ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 10px rgba(255, 0, 204, 0.5);
+        }
+
+        .leaderboard-list {
+            list-style: none;
+        }
+
+        .leaderboard-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            margin-bottom: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            animation: slideIn 0.5s ease-out;
+            animation-fill-mode: both;
+        }
+
+        .leaderboard-item:hover {
+            transform: translateX(5px);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .leaderboard-item:nth-child(1) {
+            background: linear-gradient(45deg, rgba(255, 215, 0, 0.2), rgba(255, 215, 0, 0.1));
+            border-left: 4px solid #ffd700;
+        }
+
+        .leaderboard-item:nth-child(2) {
+            background: linear-gradient(45deg, rgba(192, 192, 192, 0.2), rgba(192, 192, 192, 0.1));
+            border-left: 4px solid #c0c0c0;
+        }
+
+        .leaderboard-item:nth-child(3) {
+            background: linear-gradient(45deg, rgba(205, 127, 50, 0.2), rgba(205, 127, 50, 0.1));
+            border-left: 4px solid #cd7f32;
+        }
+
+        .leaderboard-name {
+            font-size: 1.1rem;
+        }
+
+        .leaderboard-score {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.3rem;
+            color: #ff00cc;
+            text-shadow: 0 0 5px rgba(255, 0, 204, 0.5);
+        }
+
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: linear-gradient(45deg, #ff00cc, #3333ff);
+            opacity: 0;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideIn {
+            from { 
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to { 
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                opacity: 0.8;
+            }
+            70% {
+                transform: scale(1.2);
+                opacity: 0.9;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 0.8;
+            }
+        }
+
+        @keyframes scoreBounce {
+            0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
+            40% {transform: translateY(-20px);}
+            60% {transform: translateY(-10px);}
+        }
+
+        .score-bounce {
+            animation: scoreBounce 1s ease;
+        }
+
+        .pulse {
+            animation: pulse 0.5s infinite;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            margin-top: 40px;
+            opacity: 0.7;
+            font-size: 0.9rem;
+        }
+
+        /* Animation delays for leaderboard items */
+        .leaderboard-item:nth-child(1) { animation-delay: 0.1s; }
+        .leaderboard-item:nth-child(2) { animation-delay: 0.2s; }
+        .leaderboard-item:nth-child(3) { animation-delay: 0.3s; }
+        .leaderboard-item:nth-child(4) { animation-delay: 0.4s; }
+        .leaderboard-item:nth-child(5) { animation-delay: 0.5s; }
+        
+        .completion-message {
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .final-score {
+            font-size: 2rem;
+            margin: 20px 0;
+            color: #ff00cc;
+            text-shadow: 0 0 10px rgba(255, 0, 204, 0.5);
+        }
+        
+        .player-name-input {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(94, 23, 235, 0.5);
+            border-radius: 8px;
+            color: white;
+            padding: 12px 15px;
+            font-size: 1rem;
+            margin-top: 15px;
+            width: 100%;
+            font-family: 'Oxanium', sans-serif;
+        }
+        
+        .player-name-input:focus {
+            outline: none;
+            border-color: rgba(255, 0, 204, 0.5);
+            box-shadow: 0 0 10px rgba(255, 0, 204, 0.3);
+        }
+        
+        .name-submit-btn {
+            margin-top: 10px;
+            padding: 8px 15px;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-film"></i> CINEMATIC TRIVIA CHALLENGE</h1>
+            <p class="subtitle">Test your movie knowledge with our exciting quiz!</p>
+        </header>
+
+        <div class="main-content">
+            <div class="quiz-container">
+                <div class="quiz-header">
+                    <div class="score-container">
+                        <span class="score-label">SCORE:</span>
+                        <span id="score">0</span>
+                    </div>
+                    <div class="question-count">
+                        Question <span id="current-question">1</span>/<span id="total-questions">15</span>
+                    </div>
+                </div>
+
+                <div class="question-container">
+                    <p id="question" class="question">Which 1994 film features a character named Vincent Vega?</p>
+                </div>
+
+                <div id="options-container" class="options-container">
+                    <div class="option" data-correct="true">Pulp Fiction</div>
+                    <div class="option" data-correct="false">Reservoir Dogs</div>
+                    <div class="option" data-correct="false">Natural Born Killers</div>
+                    <div class="option" data-correct="false">True Romance</div>
+                </div>
+
+                <div class="feedback-container">
+                    <div id="feedback" class="feedback"></div>
+                </div>
+
+                <div class="controls">
+                    <button id="next-btn" class="btn">Next Question <i class="fas fa-arrow-right"></i></button>
+                </div>
+            </div>
+
+            <div class="leaderboard">
+                <h2 class="leaderboard-title"><i class="fas fa-trophy"></i> LEADERBOARD</h2>
+                <ul id="leaderboard-list" class="leaderboard-list">
+                    <li class="leaderboard-item">
+                        <span class="leaderboard-name">MovieMaster</span>
+                        <span class="leaderboard-score">1450</span>
+                    </li>
+                    <li class="leaderboard-item">
+                        <span class="leaderboard-name">CinemaExpert</span>
+                        <span class="leaderboard-score">1350</span>
+                    </li>
+                    <li class="leaderboard-item">
+                        <span class="leaderboard-name">FilmFanatic</span>
+                        <span class="leaderboard-score">1300</span>
+                    </li>
+                    <li class="leaderboard-item">
+                        <span class="leaderboard-name">ScreenBuff</span>
+                        <span class="leaderboard-score">1200</span>
+                    </li>
+                    <li class="leaderboard-item">
+                        <span class="leaderboard-name">ReelLover</span>
+                        <span class="leaderboard-score">1150</span>
+                    </li>
+                </ul>
+                <div id="name-input-container" style="display: none;">
+                    <input type="text" id="player-name" class="player-name-input" placeholder="Enter your name" maxlength="15">
+                    <button id="name-submit-btn" class="btn name-submit-btn">Save Score</button>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>Cinematic Trivia Challenge &copy; 2023 | Lights, Camera, Trivia!</p>
+        </footer>
+    </div>
+
+    <script>
+        // Quiz questions data - now with 15 questions
+        const questions = [
+            {
+                question: "Which 1994 film features a character named Vincent Vega?",
+                options: ["Pulp Fiction", "Reservoir Dogs", "Natural Born Killers", "True Romance"],
+                correct: 0
+            },
+            {
+                question: "Who directed the sci-fi epic 'Interstellar'?",
+                options: ["Steven Spielberg", "Christopher Nolan", "James Cameron", "Ridley Scott"],
+                correct: 1
+            },
+            {
+                question: "Which actor played Tony Stark in the Marvel Cinematic Universe?",
+                options: ["Chris Evans", "Chris Hemsworth", "Robert Downey Jr.", "Mark Ruffalo"],
+                correct: 2
+            },
+            {
+                question: "Which film won the Academy Award for Best Picture in 2020?",
+                options: ["1917", "Joker", "Parasite", "Once Upon a Time in Hollywood"],
+                correct: 2
+            },
+            {
+                question: "What is the name of the fictional country in Black Panther?",
+                options: ["Genovia", "Wakanda", "Latveria", "Zamunda"],
+                correct: 1
+            },
+            {
+                question: "Which of these films features time loops as a central plot device?",
+                options: ["Edge of Tomorrow", "Inception", "The Matrix", "Tenet"],
+                correct: 0
+            },
+            {
+                question: "Who composed the music for the Lord of the Rings trilogy?",
+                options: ["John Williams", "Hans Zimmer", "Howard Shore", "James Horner"],
+                correct: 2
+            },
+            {
+                question: "Which actress played Katniss Everdeen in The Hunger Games series?",
+                options: ["Emma Watson", "Jennifer Lawrence", "Shailene Woodley", "Kristen Stewart"],
+                correct: 1
+            },
+            {
+                question: "In The Shawshank Redemption, what is the name of the prison?",
+                options: ["Shawshank", "Alcatraz", "Sing Sing", "Shawshank State Penitentiary"],
+                correct: 3
+            },
+            {
+                question: "Which film features the quote: 'Here's looking at you, kid'?",
+                options: ["Gone with the Wind", "Casablanca", "Breakfast at Tiffany's", "Roman Holiday"],
+                correct: 1
+            },
+            {
+                question: "Which actor played the Joker in the 2008 film 'The Dark Knight'?",
+                options: ["Jared Leto", "Jack Nicholson", "Heath Ledger", "Joaquin Phoenix"],
+                correct: 2
+            },
+            {
+                question: "What year was the original 'Star Wars' film released?",
+                options: ["1975", "1977", "1979", "1981"],
+                correct: 1
+            },
+            {
+                question: "Which director is known for his distinctive use of tracking shots?",
+                options: ["Quentin Tarantino", "Martin Scorsese", "Steven Spielberg", "Alfred Hitchcock"],
+                correct: 1
+            },
+            {
+                question: "Which film won the first Academy Award for Best Animated Feature?",
+                options: ["Toy Story", "Shrek", "Spirited Away", "Finding Nemo"],
+                correct: 1
+            },
+            {
+                question: "Who played the character Jack Dawson in 'Titanic'?",
+                options: ["Brad Pitt", "Tom Cruise", "Leonardo DiCaprio", "Johnny Depp"],
+                correct: 2
+            }
+        ];
+
+        // DOM elements
+        const questionElement = document.getElementById('question');
+        const optionsContainer = document.getElementById('options-container');
+        const scoreElement = document.getElementById('score');
+        const currentQuestionElement = document.getElementById('current-question');
+        const totalQuestionsElement = document.getElementById('total-questions');
+        const nextButton = document.getElementById('next-btn');
+        const feedbackElement = document.getElementById('feedback');
+        const leaderboardList = document.getElementById('leaderboard-list');
+        const nameInputContainer = document.getElementById('name-input-container');
+        const playerNameInput = document.getElementById('player-name');
+        const nameSubmitBtn = document.getElementById('name-submit-btn');
+
+        // Game state
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let answered = false;
+        let leaderboard = [];
+
+        // Initialize the quiz
+        function initQuiz() {
+            totalQuestionsElement.textContent = questions.length;
+            loadQuestion();
+            
+            // Load leaderboard from local storage
+            loadLeaderboard();
+            
+            // Add event listeners
+            nextButton.addEventListener('click', nextQuestion);
+            nameSubmitBtn.addEventListener('click', saveScore);
+            
+            // Use event delegation for options
+            optionsContainer.addEventListener('click', function(e) {
+                if (e.target.classList.contains('option') && !answered) {
+                    selectOption(e.target);
+                }
+            });
+        }
+
+        // Load current question
+        function loadQuestion() {
+            const question = questions[currentQuestionIndex];
+            questionElement.textContent = question.question;
+            currentQuestionElement.textContent = currentQuestionIndex + 1;
+            
+            // Clear previous options and create new ones
+            optionsContainer.innerHTML = '';
+            question.options.forEach((option, index) => {
+                const optionElement = document.createElement('div');
+                optionElement.className = 'option';
+                optionElement.textContent = option;
+                optionElement.dataset.correct = index === question.correct;
+                optionsContainer.appendChild(optionElement);
+            });
+            
+            answered = false;
+            feedbackElement.classList.remove('show', 'correct', 'incorrect');
+            nextButton.disabled = true;
+        }
+
+        // Handle option selection
+        function selectOption(selectedOption) {
+            if (answered) return;
+            
+            const correct = selectedOption.dataset.correct === 'true';
+            
+            answered = true;
+            
+            // Show correct/incorrect feedback
+            if (correct) {
+                selectedOption.classList.add('correct');
+                score += 100;
+                scoreElement.textContent = score;
+                scoreElement.classList.add('score-bounce');
+                showFeedback('Correct! +100 points', true);
+                createConfetti();
+                playSound('correct');
+            } else {
+                selectedOption.classList.add('incorrect');
+                // Highlight correct answer
+                const options = optionsContainer.querySelectorAll('.option');
+                options.forEach(option => {
+                    if (option.dataset.correct === 'true') {
+                        option.classList.add('correct');
+                    }
+                });
+                showFeedback('Wrong! The correct answer is highlighted.', false);
+                playSound('incorrect');
+            }
+            
+            nextButton.disabled = false;
+            
+            // Remove bounce animation after it completes
+            setTimeout(() => {
+                scoreElement.classList.remove('score-bounce');
+            }, 1000);
+        }
+
+        // Show feedback message
+        function showFeedback(message, isCorrect) {
+            feedbackElement.textContent = message;
+            feedbackElement.classList.add('show');
+            feedbackElement.classList.add(isCorrect ? 'correct' : 'incorrect');
+        }
+
+        // Move to next question
+        function nextQuestion() {
+            currentQuestionIndex++;
+            
+            if (currentQuestionIndex < questions.length) {
+                loadQuestion();
+            } else {
+                endQuiz();
+            }
+        }
+
+        // End the quiz
+        function endQuiz() {
+            questionElement.textContent = 'Quiz Completed!';
+            optionsContainer.innerHTML = `
+                <div class="completion-message">
+                    <h2 class="final-score">Your final score: ${score}</h2>
+                    <p>Thanks for playing!</p>
+                </div>
+            `;
+            
+            nextButton.textContent = 'Play Again';
+            nextButton.onclick = restartQuiz;
+            nextButton.disabled = false;
+            
+            // Show name input if score is high enough for leaderboard
+            if (isHighScore(score)) {
+                nameInputContainer.style.display = 'block';
+            }
+            
+            // Update leaderboard
+            updateLeaderboard(score, 'Player');
+        }
+
+        // Check if score is high enough for leaderboard
+        function isHighScore(score) {
+            if (leaderboard.length < 5) return true;
+            
+            for (let i = 0; i < leaderboard.length; i++) {
+                if (score > leaderboard[i].score) {
+                    return true;
+                }
+            }
+            
+            return false;
+        }
+
+        // Restart the quiz
+        function restartQuiz() {
+            currentQuestionIndex = 0;
+            score = 0;
+            scoreElement.textContent = score;
+            
+            nextButton.textContent = 'Next Question <i class="fas fa-arrow-right"></i>';
+            nextButton.onclick = nextQuestion;
+            nameInputContainer.style.display = 'none';
+            
+            loadQuestion();
+        }
+
+        // Save player name and score
+        function saveScore() {
+            const playerName = playerNameInput.value.trim() || 'Player';
+            updateLeaderboard(score, playerName);
+            nameInputContainer.style.display = 'none';
+            playerNameInput.value = '';
+        }
+
+        // Load leaderboard from local storage
+        function loadLeaderboard() {
+            const savedLeaderboard = localStorage.getItem('cinematicLeaderboard');
+            if (savedLeaderboard) {
+                leaderboard = JSON.parse(savedLeaderboard);
+                updateLeaderboardDisplay();
+            } else {
+                // Default leaderboard
+                leaderboard = [
+                    { name: 'MovieMaster', score: 1450 },
+                    { name: 'CinemaExpert', score: 1350 },
+                    { name: 'FilmFanatic', score: 1300 },
+                    { name: 'ScreenBuff', score: 1200 },
+                    { name: 'ReelLover', score: 1150 }
+                ];
+                saveLeaderboard();
+            }
+        }
+
+        // Save leaderboard to local storage
+        function saveLeaderboard() {
+            localStorage.setItem('cinematicLeaderboard', JSON.stringify(leaderboard));
+        }
+
+        // Update leaderboard with new score
+        function updateLeaderboard(newScore, playerName) {
+            // Add new score
+            leaderboard.push({ name: playerName, score: newScore });
+            
+            // Sort by score descending
+            leaderboard.sort((a, b) => b.score - a.score);
+            
+            // Keep only top 5
+            leaderboard = leaderboard.slice(0, 5);
+            
+            // Save to local storage
+            saveLeaderboard();
+            
+            // Update display
+            updateLeaderboardDisplay();
+        }
+
+        // Update leaderboard display
+        function updateLeaderboardDisplay() {
+            leaderboardList.innerHTML = '';
+            leaderboard.forEach((item, index) => {
+                const li = document.createElement('li');
+                li.className = 'leaderboard-item';
+                li.innerHTML = `
+                    <span class="leaderboard-name">${item.name}</span>
+                    <span class="leaderboard-score">${item.score}</span>
+                `;
+                li.style.animationDelay = `${index * 0.1}s`;
+                leaderboardList.appendChild(li);
+            });
+        }
+
+        // Create confetti effect
+        function createConfetti() {
+            for (let i = 0; i < 50; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * 100 + '%';
+                confetti.style.top = -20 + 'px';
+                confetti.style.backgroundColor = getRandomColor();
+                confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
+                document.querySelector('.quiz-container').appendChild(confetti);
+                
+                // Animate confetti
+                setTimeout(() => {
+                    confetti.style.transition = 'top 1s ease-out, opacity 1s ease-out';
+                    confetti.style.top = Math.random() * 100 + 50 + '%';
+                    confetti.style.opacity = '1';
+                    
+                    // Remove confetti after animation
+                    setTimeout(() => {
+                        confetti.style.opacity = '0';
+                        setTimeout(() => {
+                            confetti.remove();
+                        }, 1000);
+                    }, 1000);
+                }, i * 20);
+            }
+        }
+
+        // Get random color for confetti
+        function getRandomColor() {
+            const colors = ['#ff00cc', '#3333ff', '#00ccff', '#ff9900', '#00ff66'];
+            return colors[Math.floor(Math.random() * colors.length)];
+        }
+
+        // Play sound effects
+        function playSound(type) {
+            // In a real implementation, you would play actual sound files
+            // This is a simplified version using the Web Audio API for basic sounds
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                if (type === 'correct') {
+                    oscillator.frequency.setValueAtTime(523.25, audioContext.currentTime); // C5
+                    oscillator.frequency.setValueAtTime(659.25, audioContext.currentTime + 0.1); // E5
+                    oscillator.frequency.setValueAtTime(783.99, audioContext.currentTime + 0.2); // G5
+                    gainNode.gain.setValueAtTime(0.5, audioContext.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+                    oscillator.start();
+                    oscillator.stop(audioContext.currentTime + 0.3);
+                } else if (type === 'incorrect') {
+                    oscillator.frequency.setValueAtTime(196.00, audioContext.currentTime); // G3
+                    oscillator.frequency.setValueAtTime(174.61, audioContext.currentTime + 0.1); // F3
+                    oscillator.frequency.setValueAtTime(155.56, audioContext.currentTime + 0.2); // D#3
+                    gainNode.gain.setValueAtTime(0.5, audioContext.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+                    oscillator.start();
+                    oscillator.stop(audioContext.currentTime + 0.3);
+                }
+            } catch (e) {
+                console.log("Web Audio API is not supported in this browser");
+            }
+        }
+
+        // Initialize the quiz when the page loads
+        window.addEventListener('load', initQuiz);
+    </script>
+</body>
+</html>

@@ -1,0 +1,1648 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cinematic Soundtrack Preview</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" href="images/rate-movie_16310584.png" type="image/png">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0c0c13 0%, #1a1a2e 100%);
+            color: #e6e6e6;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+            animation: fadeIn 1s ease-out;
+        }
+
+        h1 {
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #ff8a00, #e52e71);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 2px 10px rgba(229, 46, 113, 0.2);
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.8;
+        }
+
+        .movie-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .movie-card {
+            background: linear-gradient(to bottom, #1e2030, #161622);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+            animation: slideUp 0.5s ease-out;
+            animation-fill-mode: both;
+        }
+
+        .movie-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 15px 25px rgba(0, 0, 0, 0.5);
+        }
+
+        .movie-poster {
+            width: 100%;
+            height: 380px;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .movie-card:hover .movie-poster {
+            transform: scale(1.08);
+        }
+
+        .movie-info {
+            padding: 20px;
+        }
+
+        .movie-title {
+            font-size: 1.4rem;
+            margin-bottom: 8px;
+            color: #fff;
+        }
+
+        .movie-year {
+            color: #a0a0a0;
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+        }
+
+        .preview-btn {
+            background: linear-gradient(45deg, #ff8a00, #e52e71);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            letter-spacing: 1px;
+        }
+
+        .preview-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(229, 46, 113, 0.4);
+        }
+
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+            backdrop-filter: blur(10px);
+            sidebar-width: none;
+        }
+
+        .modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background: linear-gradient(to bottom, #1a1a2e, #0f0f1a);
+            width: 90%;
+            max-width: 1000px;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+            transform: scale(0.9);
+            transition: transform 0.4s ease;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal.active .modal-content {
+            transform: scale(1);
+        }
+
+        .modal-header {
+            padding: 25px;
+            background: rgba(0, 0, 0, 0.3);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .modal-title {
+            font-size: 1.8rem;
+            background: linear-gradient(45deg, #ff8a00, #e52e71);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .close-btn:hover {
+            transform: rotate(90deg);
+        }
+
+        .soundtrack-list {
+            padding: 20px;
+        }
+
+        .soundtrack-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            margin-bottom: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .soundtrack-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateX(5px);
+        }
+
+        .soundtrack-item.active {
+            background: linear-gradient(45deg, rgba(255, 138, 0, 0.2), rgba(229, 46, 113, 0.2));
+            border-left: 4px solid #e52e71;
+        }
+
+        .play-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 15px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .soundtrack-item:hover .play-btn {
+            background: linear-gradient(45deg, #ff8a00, #e52e71);
+            transform: scale(1.1);
+        }
+
+        .play-btn::before {
+            content: '';
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            border-radius: 50%;
+            background: inherit;
+            z-index: -1;
+            animation: pulse 1.5s infinite;
+        }
+
+        .soundtrack-info {
+            flex: 1;
+        }
+
+        .soundtrack-title {
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+            color: #fff;
+        }
+
+        .soundtrack-artist {
+            color: #a0a0a0;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+
+        .soundtrack-duration {
+            color: #e52e71;
+            font-size: 0.8rem;
+        }
+
+        .player-container {
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        .youtube-player {
+            width: 100%;
+            aspect-ratio: 16/9;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .player-placeholder {
+            width: 100%;
+            aspect-ratio: 16/9;
+            background: linear-gradient(45deg, #1a1a2e, #0f0f1a);
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #a0a0a0;
+            font-size: 1.1rem;
+            text-align: center;
+            padding: 20px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            margin-top: 40px;
+            opacity: 0.7;
+            font-size: 0.9rem;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                opacity: 0.8;
+            }
+
+            70% {
+                transform: scale(1.8);
+                opacity: 0;
+            }
+
+            100% {
+                transform: scale(1.8);
+                opacity: 0;
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .movie-grid {
+                grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            }
+
+            .modal-content {
+                width: 95%;
+            }
+
+            .modal-header {
+                padding: 15px;
+            }
+
+            .modal-title {
+                font-size: 1.4rem;
+            }
+
+            h1 {
+                font-size: 2.2rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .movie-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .soundtrack-item {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .play-btn {
+                margin-right: 0;
+                margin-bottom: 10px;
+            }
+
+            .movie-poster {
+                height: 320px;
+            }
+        }
+
+        /* Delay animations for grid items */
+        .movie-card:nth-child(1) {
+            animation-delay: 0.1s;
+        }
+
+        .movie-card:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .movie-card:nth-child(3) {
+            animation-delay: 0.3s;
+        }
+
+        .movie-card:nth-child(4) {
+            animation-delay: 0.4s;
+        }
+
+        .movie-card:nth-child(5) {
+            animation-delay: 0.5s;
+        }
+
+        .movie-card:nth-child(6) {
+            animation-delay: 0.6s;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>Cinematic Soundtracks</h1>
+            <p class="subtitle">Preview the top songs from your favorite movies</p>
+        </header>
+
+        <div class="movie-grid">
+            <!-- Movie Cards -->
+            <div class="movie-card" data-movie="inception">
+                <img src="https://s3.amazonaws.com/nightjarprod/content/uploads/sites/130/2021/08/19090041/9gk7adHYeDvHkCSEqAvQNLV5Uge-scaled.jpg"
+                    alt="Inception" class="movie-poster">
+                <div class="movie-info">
+                    <h3 class="movie-title">Inception</h3>
+                    <p class="movie-year">2010 • Sci-Fi/Thriller</p>
+                    <button class="preview-btn">Preview Soundtrack</button>
+                </div>
+            </div>
+
+            <div class="movie-card" data-movie="interstellar">
+                <img src="https://m.media-amazon.com/images/M/MV5BYzdjMDAxZGItMjI2My00ODA1LTlkNzItOWFjMDU5ZDJlYWY3XkEyXkFqcGc@._V1_.jpg"
+                    alt="Interstellar" class="movie-poster">
+                <div class="movie-info">
+                    <h3 class="movie-title">Interstellar</h3>
+                    <p class="movie-year">2014 • Sci-Fi/Adventure</p>
+                    <button class="preview-btn">Preview Soundtrack</button>
+                </div>
+            </div>
+
+            <div class="movie-card" data-movie="dune">
+                <img src="https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcSt7xlJEzb-xopDqcQ6iw9SbY8PAlJN8H7DYUzTqmZkwLT9o8JXv6YWvDMGRKwkyRnf6RHzGg"
+                    alt="Dune" class="movie-poster">
+                <div class="movie-info">
+                    <h3 class="movie-title">Dune</h3>
+                    <p class="movie-year">2021 • Sci-Fi/Adventure</p>
+                    <button class="preview-btn">Preview Soundtrack</button>
+                </div>
+            </div>
+
+            <div class="movie-card" data-movie="black-panther">
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT1MSjVz4AlBMvl3RD0eXqenCdZbowXC-2uGUcgYGSrtuOdsVAGWVYmJ24_wB54zLkMxaVU"
+                    alt="Black Panther" class="movie-poster">
+                <div class="movie-info">
+                    <h3 class="movie-title">Black Panther</h3>
+                    <p class="movie-year">2018 • Action/Adventure</p>
+                    <button class="preview-btn">Preview Soundtrack</button>
+                </div>
+            </div>
+
+            <div class="movie-card" data-movie="guardians">
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS5LmvEQ3u221y-8Qv0Qj-e7ORLVYZoq1Y-CyRSIi0WvFIvtNTcvICk-cG0YErJxw7PqeJ3"
+                    alt="Guardians of the Galaxy" class="movie-poster">
+                <div class="movie-info">
+                    <h3 class="movie-title">Guardians of the Galaxy</h3>
+                    <p class="movie-year">2014 • Action/Adventure</p>
+                    <button class="preview-btn">Preview Soundtrack</button>
+                </div>
+            </div>
+
+            <div class="movie-card" data-movie="social-network">
+                <img src="https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcQmMRrkz77zNkcNorHVA_qkfw8a0M3M9fXm9hJc6CWDY1SZ_c6BOE2JCk3FpkjQpgIec0d8"
+                    alt="The Social Network" class="movie-poster">
+                <div class="movie-info">
+                    <h3 class="movie-title">The Social Network</h3>
+                    <p class="movie-year">2010 • Drama/Biography</p>
+                    <button class="preview-btn">Preview Soundtrack</button>
+                </div>
+            </div>
+
+
+            <!-- Oppenheimer -->
+            <div class="movie-card" data-movie="oppenheimer">
+                <img src="https://m.media-amazon.com/images/M/MV5BMDBmYTZjNjUtN2M1MS00MTQ2LTk2ODgtNzc2M2QyZGE5NTVjXkEyXkFqcGdeQXVyNzAwMjU2MTY@._V1_.jpg"
+                    alt="Oppenheimer" class="movie-poster">
+                <div class="movie-info">
+                    <h3 class="movie-title">Oppenheimer</h3>
+                    <p class="movie-year">2023 • Biography/Thriller</p>
+                    <button class="preview-btn">Preview Soundtrack</button>
+                </div>
+            </div>
+
+            <!-- The Dark Knight -->
+            <div class="movie-card" data-movie="the-dark-knight">
+                <img src="https://m.media-amazon.com/images/M/MV5BMTMxNTMwODM0NF5BMl5BanBnXkFtZTcwODAyMTk2Mw@@._V1_.jpg"
+                    alt="The Dark Knight" class="movie-poster">
+                <div class="movie-info">
+                    <h3 class="movie-title">The Dark Knight</h3>
+                    <p class="movie-year">2008 • Action/Thriller</p>
+                    <button class="preview-btn">Preview Soundtrack</button>
+                </div>
+            </div>
+
+            <!-- Blade Runner 2049 -->
+            <div class="movie-card" data-movie="blade-runner-2049">
+                <img src="https://m.media-amazon.com/images/M/MV5BNzA1Njg4NzYxOV5BMl5BanBnXkFtZTgwODk5NjU3MzI@._V1_.jpg"
+                    alt="Blade Runner 2049" class="movie-poster">
+                <div class="movie-info">
+                    <h3 class="movie-title">Blade Runner 2049</h3>
+                    <p class="movie-year">2017 • Sci-Fi/Thriller</p>
+                    <button class="preview-btn">Preview Soundtrack</button>
+                </div>
+            </div>
+
+            <!-- Mad Max: Fury Road -->
+            <div class="movie-card" data-movie="mad-max-fury-road">
+                <img src="https://m.media-amazon.com/images/M/MV5BN2EwM2I5OWMtMGQyMi00Zjg1LWJkNTctZTdjYTA4OGUwZjMyXkEyXkFqcGdeQXVyMTMxODk2OTU@._V1_.jpg"
+                    alt="Mad Max: Fury Road" class="movie-poster">
+                <div class="movie-info">
+                    <h3 class="movie-title">Mad Max: Fury Road</h3>
+                    <p class="movie-year">2015 • Action/Adventure</p>
+                    <button class="preview-btn">Preview Soundtrack</button>
+                </div>
+            </div>
+
+            <!-- The Social Network -->
+            <div class="movie-card" data-movie="the-social-network">
+                <img src="https://m.media-amazon.com/images/M/MV5BOGUyZDUxZjEtMmIzMC00MzlmLTg4MGItZWJmMzBhZjE0Mjc1XkEyXkFqcGdeQXVyMTMxODk2OTU@._V1_.jpg"
+                    alt="The Social Network" class="movie-poster">
+                <div class="movie-info">
+                    <h3 class="movie-title">The Social Network</h3>
+                    <p class="movie-year">2010 • Biography/Drama</p>
+                    <button class="preview-btn">Preview Soundtrack</button>
+                </div>
+            </div>
+
+            <!-- Black Panther -->
+            <div class="movie-card" data-movie="black-panther">
+                <img src="https://m.media-amazon.com/images/M/MV5BMTg1MTY2MjYzNV5BMl5BanBnXkFtZTgwMTc4NTMwNDI@._V1_.jpg"
+                    alt="Black Panther" class="movie-poster">
+                <div class="movie-info">
+                    <h3 class="movie-title">Black Panther</h3>
+                    <p class="movie-year">2018 • Action/Adventure</p>
+                    <button class="preview-btn">Preview Soundtrack</button>
+                </div>
+            </div>
+
+            <!-- La La Land -->
+            <div class="movie-card" data-movie="la-la-land">
+                <img src="https://m.media-amazon.com/images/M/MV5BMzUzNDM2NzM2MV5BMl5BanBnXkFtZTgwNTM3NTg4OTE@._V1_.jpg"
+                    alt="La La Land" class="movie-poster">
+                <div class="movie-info">
+                    <h3 class="movie-title">La La Land</h3>
+                    <p class="movie-year">2016 • Musical/Romance</p>
+                    <button class="preview-btn">Preview Soundtrack</button>
+                </div>
+            </div>
+
+            <!-- Joker -->
+            <div class="movie-card" data-movie="joker">
+                <img src="https://m.media-amazon.com/images/M/MV5BNGVjNWI4ZGUtNzE0MS00YTJmLWE0ZDctN2ZiYTk2YmI3NTYyXkEyXkFqcGdeQXVyMTkxNjUyNQ@@._V1_.jpg"
+                    alt="Joker" class="movie-poster">
+                <div class="movie-info">
+                    <h3 class="movie-title">Joker</h3>
+                    <p class="movie-year">2019 • Crime/Drama</p>
+                    <button class="preview-btn">Preview Soundtrack</button>
+                </div>
+            </div>
+
+            <!-- The Grand Budapest Hotel -->
+            <div class="movie-card" data-movie="the-grand-budapest-hotel">
+                <img src="https://m.media-amazon.com/images/M/MV5BMzM5NjUxOTEyMl5BMl5BanBnXkFtZTgwNjEyMDM0MDE@._V1_.jpg"
+                    alt="The Grand Budapest Hotel" class="movie-poster">
+                <div class="movie-info">
+                    <h3 class="movie-title">The Grand Budapest Hotel</h3>
+                    <p class="movie-year">2014 • Comedy/Drama</p>
+                    <button class="preview-btn">Preview Soundtrack</button>
+                </div>
+            </div>
+
+            <!-- Spider-Man: Into the Spider-Verse -->
+            <div class="movie-card" data-movie="spider-man-into-the-spider-verse">
+                <img src="https://m.media-amazon.com/images/M/MV5BMjMwNDkxMTgzOF5BMl5BanBnXkFtZTgwNTkwNTQ3NjM@._V1_.jpg"
+                    alt="Spider-Man: Into the Spider-Verse" class="movie-poster">
+                <div class="movie-info">
+                    <h3 class="movie-title">Spider-Man: Into the Spider-Verse</h3>
+                    <p class="movie-year">2018 • Animation/Action</p>
+                    <button class="preview-btn">Preview Soundtrack</button>
+                </div>
+            </div>
+
+            <!-- Arrival -->
+            <div class="movie-card" data-movie="arrival">
+                <img src="https://m.media-amazon.com/images/M/MV5BMTExMzU0ODcxNDheQTJeQWpwZ15BbWU4MDE1OTI4MzAy._V1_.jpg"
+                    alt="Arrival" class="movie-poster">
+                <div class="movie-info">
+                    <h3 class="movie-title">Arrival</h3>
+                    <p class="movie-year">2016 • Drama/Sci-Fi</p>
+                    <button class="preview-btn">Preview Soundtrack</button>
+                </div>
+            </div>
+
+            <!-- Baby Driver -->
+            <div class="movie-card" data-movie="baby-driver">
+                <img src="https://m.media-amazon.com/images/M/MV5BMjM3MjQ1MzkxNl5BMl5BanBnXkFtZTgwODk1ODgyMjI@._V1_.jpg"
+                    alt="Baby Driver" class="movie-poster">
+                <div class="movie-info">
+                    <h3 class="movie-title">Baby Driver</h3>
+                    <p class="movie-year">2017 • Action/Crime</p>
+                    <button class="preview-btn">Preview Soundtrack</button>
+                </div>
+            </div>
+
+            <!-- The Shape of Water -->
+            <div class="movie-card" data-movie="the-shape-of-water">
+                <img src="https://psuvanguard.com/wp-content/uploads/2018/01/shape_of_water_ver3_xxlg.jpg"
+                    alt="The Shape of Water" class="movie-poster">
+                <div class="movie-info">
+                    <h3 class="movie-title">The Shape of Water</h3>
+                    <p class="movie-year">2017 • Drama/Fantasy</p>
+                    <button class="preview-btn">Preview Soundtrack</button>
+                </div>
+            </div>
+
+            <!-- Whiplash -->
+            <div class="movie-card" data-movie="whiplash">
+                <img src="https://m.media-amazon.com/images/M/MV5BOTA5NDZlZGUtMjAxOS00YTRkLTkwYmMtYWQ0NWEwZDZiNjEzXkEyXkFqcGdeQXVyMTMxODk2OTU@._V1_.jpg"
+                    alt="Whiplash" class="movie-poster">
+                <div class="movie-info">
+                    <h3 class="movie-title">Whiplash</h3>
+                    <p class="movie-year">2014 • Drama/Music</p>
+                    <button class="preview-btn">Preview Soundtrack</button>
+                </div>
+            </div>
+
+            <!-- Dunkirk -->
+            <div class="movie-card" data-movie="dunkirk">
+                <img src="https://m.media-amazon.com/images/M/MV5BN2YyZjQ0NTEtNzU5MS00NGZkLTg0MTEtYzJmMWY3MWRhZjM2XkEyXkFqcGdeQXVyMDA4NzMyOA@@._V1_.jpg"
+                    alt="Dunkirk" class="movie-poster">
+                <div class="movie-info">
+                    <h3 class="movie-title">Dunkirk</h3>
+                    <p class="movie-year">2017 • Action/Drama</p>
+                    <button class="preview-btn">Preview Soundtrack</button>
+                </div>
+            </div>
+
+            <!-- A Star Is Born -->
+            <div class="movie-card" data-movie="a-star-is-born">
+                <img src="https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcTErcrTfaQpCZhgNhv7l28V1Jf509FVLDQ6p5UJ8MSUgBjQtBkEKjwMSjXC4hMp6H-w2HDN.jpg"
+                    alt="A Star Is Born" class="movie-poster">
+                <div class="movie-info">
+                    <h3 class="movie-title">A Star Is Born</h3>
+                    <p class="movie-year">2018 • Drama/Music</p>
+                    <button class="preview-btn">Preview Soundtrack</button>
+                </div>
+            </div>
+
+            <!-- The Revenant -->
+            <div class="movie-card" data-movie="the-revenant">
+                <img src="https://m.media-amazon.com/images/M/MV5BMDE5OWMzM2QtOTU2ZS00NzAyLWI2MDEtOTRlYjIxZGM0OWRjXkEyXkFqcGdeQXVyODE5NzE3OTE@._V1_.jpg"
+                    alt="The Revenant" class="movie-poster">
+                <div class="movie-info">
+                    <h3 class="movie-title">The Revenant</h3>
+                    <p class="movie-year">2015 • Adventure/Drama</p>
+                    <button class="preview-btn">Preview Soundtrack</button>
+                </div>
+            </div>
+
+            <!-- Blade Runner -->
+            <div class="movie-card" data-movie="blade-runner">
+                <img src="https://m.media-amazon.com/images/M/MV5BNzQzMzJhZTEtOWM4NS00MTdhLTg0YjgtMjM4MDRkZjUwZDBlXkEyXkFqcGdeQXVyNjU0OTQ0OTY@._V1_.jpg"
+                    alt="Blade Runner" class="movie-poster">
+                <div class="movie-info">
+                    <h3 class="movie-title">Blade Runner</h3>
+                    <p class="movie-year">1982 • Sci-Fi/Thriller</p>
+                    <button class="preview-btn">Preview Soundtrack</button>
+                </div>
+            </div>
+
+            <!-- Drive -->
+            <div class="movie-card" data-movie="drive">
+                <img src="https://m.media-amazon.com/images/M/MV5BZjY5ZjQyMjMtMmEwOC00Nzc2LTllYTItMmU2MzJjNTg1NjY0XkEyXkFqcGdeQXVyNjQ1MTMzMDQ@._V1_.jpg"
+                    alt="Drive" class="movie-poster">
+                <div class="movie-info">
+                    <h3 class="movie-title">Drive</h3>
+                    <p class="movie-year">2011 • Crime/Drama</p>
+                    <button class="preview-btn">Preview Soundtrack</button>
+                </div>
+            </div>
+
+            <!-- The Lord of the Rings: The Fellowship of the Ring -->
+            <div class="movie-card" data-movie="lotr-fellowship">
+                <img src="https://m.media-amazon.com/images/M/MV5BN2EyZjM3NzUtNWUzMi00MTgxLWI0NTctMzY4M2VlOTdjZWRiXkEyXkFqcGdeQXVyNDUzOTQ5MjY@._V1_.jpg"
+                    alt="The Lord of the Rings: The Fellowship of the Ring" class="movie-poster">
+                <div class="movie-info">
+                    <h3 class="movie-title">The Lord of the Rings: The Fellowship</h3>
+                    <p class="movie-year">2001 • Adventure/Fantasy</p>
+                    <button class="preview-btn">Preview Soundtrack</button>
+                </div>
+            </div>
+
+            <!-- Gladiator -->
+            <div class="movie-card" data-movie="gladiator">
+                <img src="https://m.media-amazon.com/images/M/MV5BMDliMmNhNDEtODUyOS00MjNlLTgxODEtN2U3NzIxMGVkZTA1L2ltYWdlXkEyXkFqcGdeQXVyNjU0OTQ0OTY@._V1_.jpg"
+                    alt="Gladiator" class="movie-poster">
+                <div class="movie-info">
+                    <h3 class="movie-title">Gladiator</h3>
+                    <p class="movie-year">2000 • Action/Adventure</p>
+                    <button class="preview-btn">Preview Soundtrack</button>
+                </div>
+            </div>
+
+            <!-- Pirates of the Caribbean -->
+            <div class="movie-card" data-movie="pirates-caribbean">
+                <img src="https://m.media-amazon.com/images/M/MV5BNGYyZGM5MGMtYTY2Ni00M2Y1LWIzNjQtYWUzM2VlNGVhMDNhXkEyXkFqcGdeQXVyMTMxODk2OTU@._V1_.jpg"
+                    alt="Pirates of the Caribbean" class="movie-poster">
+                <div class="movie-info">
+                    <h3 class="movie-title">Pirates of the Caribbean</h3>
+                    <p class="movie-year">2003 • Action/Adventure</p>
+                    <button class="preview-btn">Preview Soundtrack</button>
+                </div>
+            </div>
+
+            <!-- Harry Potter and the Sorcerer's Stone -->
+            <div class="movie-card" data-movie="harry-potter">
+                <img src="https://m.media-amazon.com/images/M/MV5BNmQ0ODBhMjUtNDRhOC00MGQzLTk5MTAtZDliODg5NmU5MjZhXkEyXkFqcGdeQXVyNDUyOTg3Njg@._V1_.jpg"
+                    alt="Harry Potter and the Sorcerer's Stone" class="movie-poster">
+                <div class="movie-info">
+                    <h3 class="movie-title">Harry Potter: Sorcerer's Stone</h3>
+                    <p class="movie-year">2001 • Adventure/Family</p>
+                    <button class="preview-btn">Preview Soundtrack</button>
+                </div>
+            </div>
+
+            <!-- Star Wars: The Empire Strikes Back -->
+            <div class="movie-card" data-movie="empire-strikes-back">
+                <img src="https://m.media-amazon.com/images/M/MV5BYmU1NDRjNDgtMzhiMi00NjZmLTg5NGItZDNiZjU5NTU4OTE0XkEyXkFqcGdeQXVyNzkwMjQ5NzM@._V1_.jpg"
+                    alt="Star Wars: The Empire Strikes Back" class="movie-poster">
+                <div class="movie-info">
+                    <h3 class="movie-title">Star Wars: Empire Strikes Back</h3>
+                    <p class="movie-year">1980 • Action/Adventure</p>
+                    <button class="preview-btn">Preview Soundtrack</button>
+                </div>
+            </div>
+
+            <!-- The Matrix -->
+            <div class="movie-card" data-movie="the-matrix">
+                <img src="https://m.media-amazon.com/images/M/MV5BNzQzOTk3OTAtNDQ0Zi00ZTVkLWI0MTEtMDllZjNkYzNjNTc4L2ltYWdlXkEyXkFqcGdeQXVyNjU0OTQ0OTY@._V1_.jpg"
+                    alt="The Matrix" class="movie-poster">
+                <div class="movie-info">
+                    <h3 class="movie-title">The Matrix</h3>
+                    <p class="movie-year">1999 • Action/Sci-Fi</p>
+                    <button class="preview-btn">Preview Soundtrack</button>
+                </div>
+            </div>
+
+            <!-- Avatar -->
+            <div class="movie-card" data-movie="avatar">
+                <img src="https://m.media-amazon.com/images/M/MV5BZDA0OGQxNTItMDZkMC00N2UyLTg3MzMtYTJmNjg3Nzk5MzRiXkEyXkFqcGdeQXVyMjUzOTY1NTc@._V1_.jpg"
+                    alt="Avatar" class="movie-poster">
+                <div class="movie-info">
+                    <h3 class="movie-title">Avatar</h3>
+                    <p class="movie-year">2009 • Action/Adventure</p>
+                    <button class="preview-btn">Preview Soundtrack</button>
+                </div>
+            </div>
+
+            <!-- Top Gun: Maverick -->
+            <div class="movie-card" data-movie="top-gun-maverick">
+                <img src="https://m.media-amazon.com/images/M/MV5BZWYzOGEwNTgtNWU3NS00ZTQ0LWJkODUtMmVhMjIwMjA1ZmQwXkEyXkFqcGdeQXVyMjkwOTAyMDU@._V1_.jpg"
+                    alt="Top Gun: Maverick" class="movie-poster">
+                <div class="movie-info">
+                    <h3 class="movie-title">Top Gun: Maverick</h3>
+                    <p class="movie-year">2022 • Action/Drama</p>
+                    <button class="preview-btn">Preview Soundtrack</button>
+                </div>
+            </div>
+
+            <div class="movie-card" data-movie="animal">
+                <img src="https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcT_ucWGXsn7q9pI6kgi1ZqsI_MsylRX2yQVF0_jRw99HgAozEZIG6qfAogFeBp1jVi3c-p6"
+                    alt="Animal" class="movie-poster">
+                <div class="movie-info">
+                    <h3 class="movie-title">Animal</h3>
+                    <p class="movie-year">2023 • Action/Crime</p>
+                    <button class="preview-btn">Preview Soundtrack</button>
+                </div>
+            </div>
+
+            <div class="movie-card" data-movie="brahmastra">
+                <img src="https://upload.wikimedia.org/wikipedia/en/e/ea/Brahmastra_Part_One_Shiva.jpg"
+                    alt="Brahmāstra: Part One – Shiva" class="movie-poster">
+                <div class="movie-info">
+                    <h3 class="movie-title">Brahmāstra: Part One – Shiva</h3>
+                    <p class="movie-year">2022 • Fantasy/Action</p>
+                    <button class="preview-btn">Preview Soundtrack</button>
+                </div>
+            </div>
+
+            <div class="movie-card" data-movie="rrr">
+                <img src="https://m.media-amazon.com/images/M/MV5BODUwNDNjYzctODUxNy00ZTA2LWIyYTEtMDc5Y2E5ZjBmNTMzXkEyXkFqcGdeQXVyODE5NzE3OTE@._V1_FMjpg_UX1000_.jpg"
+                    alt="RRR" class="movie-poster">
+                <div class="movie-info">
+                    <h3 class="movie-title">RRR</h3>
+                    <p class="movie-year">2022 • Action/Drama</p>
+                    <button class="preview-btn">Preview Soundtrack</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal -->
+        <div class="modal" id="previewModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title" id="modalMovieTitle">Movie Soundtrack</h2>
+                    <button class="close-btn">&times;</button>
+                </div>
+
+                <div class="soundtrack-list" id="soundtrackList">
+                    <!-- Soundtrack items will be dynamically inserted here -->
+                </div>
+
+                <div class="player-container">
+                    <div class="player-placeholder" id="playerPlaceholder">
+                        Select a song to preview
+                    </div>
+                    <div class="youtube-player" id="youtubePlayer" style="display: none;"></div>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>Movie Soundtrack Preview &copy; 2023 | Experience the music behind the movies</p>
+        </footer>
+    </div>
+
+    <script>
+        // Movie data with soundtrack information
+        const movieData = {
+            'inception': {
+                title: 'Inception',
+                soundtracks: [
+                    {
+                        title: 'Time',
+                        artist: 'Hans Zimmer',
+                        duration: '4:35',
+                        youtubeId: 'iaGLiXCIgbw'
+                    },
+                    {
+                        title: 'Dream Is Collapsing',
+                        artist: 'Hans Zimmer',
+                        duration: '2:42',
+                        youtubeId: 'OzLhXesNkCI'
+                    },
+                    {
+                        title: 'Mombasa',
+                        artist: 'Hans Zimmer',
+                        duration: '4:52',
+                        youtubeId: 'kn_wEjhla'
+                    }
+                ]
+            },
+            'interstellar': {
+                title: 'Interstellar',
+                soundtracks: [
+                    {
+                        title: 'Cornfield Chase',
+                        artist: 'Hans Zimmer',
+                        duration: '2:06',
+                        youtubeId: 'JuSsvM8B4Jc'
+                    },
+                    {
+                        title: 'No Time for Caution',
+                        artist: 'Hans Zimmer',
+                        duration: '4:06',
+                        youtubeId: 'm3zvVGJrTP8'
+                    },
+                    {
+                        title: 'Mountains',
+                        artist: 'Hans Zimmer',
+                        duration: '3:39',
+                        youtubeId: 'o_Ay_iDRAbc'
+                    }
+                ]
+            },
+            'dune': {
+                title: 'Dune',
+                soundtracks: [
+                    {
+                        title: 'Paul\'s Dream',
+                        artist: 'Hans Zimmer',
+                        duration: '3:08',
+                        youtubeId: '-xD6pYJveYI'
+                    },
+                    {
+                        title: 'Ripples in the Sand',
+                        artist: 'Hans Zimmer',
+                        duration: '5:15',
+                        youtubeId: 'y_mJnLU71Vc'
+                    },
+                    {
+                        title: 'Leaving Caladan',
+                        artist: 'Hans Zimmer',
+                        duration: '1:58',
+                        youtubeId: '75EVN4LSeLw'
+                    }
+                ]
+            },
+            'black-panther': {
+                title: 'Black Panther',
+                soundtracks: [
+                    {
+                        title: 'All The Stars',
+                        artist: 'Kendrick Lamar, SZA',
+                        duration: '2:44',
+                        youtubeId: 'EgqVrxPSNgs'
+                    },
+                    {
+                        title: 'Pray For Me',
+                        artist: 'The Weeknd, Kendrick Lamar',
+                        duration: '3:31',
+                        youtubeId: '7kZEXeBgGE8'
+                    },
+                    {
+                        title: 'King\'s Dead',
+                        artist: 'Jay Rock, Kendrick Lamar',
+                        duration: '3:49',
+                        youtubeId: 'C_wIH980Opc'
+                    }
+                ]
+            },
+            'guardians': {
+                title: 'Guardians of the Galaxy',
+                soundtracks: [
+                    {
+                        title: 'Hooked on a Feeling',
+                        artist: 'Blue Swede',
+                        duration: '2:52',
+                        youtubeId: '7WKqc-bxiHY'
+                    },
+                    {
+                        title: 'Come and Get Your Love',
+                        artist: 'Redbone',
+                        duration: '3:26',
+                        youtubeId: 'wFwYcHjP-YU'
+                    },
+                    {
+                        title: 'I Want You Back',
+                        artist: 'The Jackson 5',
+                        duration: '2:58',
+                        youtubeId: '_eAAoV6Y06Q'
+                    }
+                ]
+            },
+            'social-network': {
+                title: 'The Social Network',
+                soundtracks: [
+                    {
+                        title: 'Hand Covers Bruise',
+                        artist: 'Trent Reznor & Atticus Ross',
+                        duration: '4:18',
+                        youtubeId: 'yaztFAh23vs'
+                    },
+                    {
+                        title: 'In Motion',
+                        artist: 'Trent Reznor & Atticus Ross',
+                        duration: '4:56',
+                        youtubeId: 'MUnSW8xOd0A'
+                    },
+                ]
+            },
+            'la-la-land': {
+                title: 'La La Land',
+                soundtracks: [
+                    {
+                        title: 'City of Stars',
+                        artist: 'Ryan Gosling, Emma Stone',
+                        duration: '4:15',
+                        youtubeId: 'C_KaZQqQNOQ'
+                    },
+                    {
+                        title: 'Another Day of Sun',
+                        artist: 'La La Land Cast',
+                        duration: '3:48',
+                        youtubeId: 'Cbk980jV7Ao'
+                    },
+                    {
+                        title: 'Mia & Sebastian\'s Theme',
+                        artist: 'Justin Hurwitz',
+                        duration: '1:38',
+                        youtubeId: 'f4Z2k5MpLmo'
+                    }
+                ]
+            },
+            'joker': {
+                title: 'Joker',
+                soundtracks: [
+                    {
+                        title: 'Defeated Clown',
+                        artist: 'Hildur Guðnadóttir',
+                        duration: '4:29',
+                        youtubeId: 'k0Ww6Z8Gt_8'
+                    },
+                    {
+                        title: 'Bathroom Dance',
+                        artist: 'Hildur Guðnadóttir',
+                        duration: '2:08',
+                        youtubeId: 'eG5EbzV4X1M'
+                    },
+                    {
+                        title: 'Call Me Joker',
+                        artist: 'Hildur Guðnadóttir',
+                        duration: '4:48',
+                        youtubeId: 'QyJWTM4pX2I'
+                    }
+                ]
+            },
+            'the-grand-budapest-hotel': {
+                title: 'The Grand Budapest Hotel',
+                soundtracks: [
+                    {
+                        title: 'Main Theme',
+                        artist: 'Alexandre Desplat',
+                        duration: '2:59',
+                        youtubeId: 'dDm3x7wZ5Xg'
+                    },
+                    {
+                        title: 'Mr. Moustafa',
+                        artist: 'Alexandre Desplat',
+                        duration: '4:00',
+                        youtubeId: '7NykS2K_5Y4'
+                    },
+                    {
+                        title: 'The War (Zero\'s Theme)',
+                        artist: 'Alexandre Desplat',
+                        duration: '2:43',
+                        youtubeId: 'e8YtQD5fM1s'
+                    }
+                ]
+            },
+            'spider-man-into-the-spider-verse': {
+                title: 'Spider-Man: Into the Spider-Verse',
+                soundtracks: [
+                    {
+                        title: 'Sunflower',
+                        artist: 'Post Malone, Swae Lee',
+                        duration: '2:38',
+                        youtubeId: 'ApXoWvfEYVU'
+                    },
+                    {
+                        title: 'What\'s Up Danger',
+                        artist: 'Blackway & Black Caviar',
+                        duration: '3:42',
+                        youtubeId: '5p3is6yqi4A'
+                    },
+                    {
+                        title: 'Familia',
+                        artist: 'Nicki Minaj, Anuel AA',
+                        duration: '2:38',
+                        youtubeId: 'qJ6Fc_hv_ks'
+                    }
+                ]
+            },
+            'arrival': {
+                title: 'Arrival',
+                soundtracks: [
+                    {
+                        title: 'On the Nature of Daylight',
+                        artist: 'Max Richter',
+                        duration: '6:11',
+                        youtubeId: 'rVN1B-tUpgs'
+                    },
+                    {
+                        title: 'Heptapod B',
+                        artist: 'Jóhann Jóhannsson',
+                        duration: '4:00',
+                        youtubeId: '6O8LxkE8h2U'
+                    },
+                    {
+                        title: 'Kangaru',
+                        artist: 'Jóhann Jóhannsson',
+                        duration: '3:22',
+                        youtubeId: 'yV4LkwO1k-s'
+                    }
+                ]
+            },
+            'baby-driver': {
+                title: 'Baby Driver',
+                soundtracks: [
+                    {
+                        title: 'Bellbottoms',
+                        artist: 'The Jon Spencer Blues Explosion',
+                        duration: '5:17',
+                        youtubeId: '6DBRY5SO6dI'
+                    },
+                    {
+                        title: 'Easy',
+                        artist: 'Sky Ferreira',
+                        duration: '4:28',
+                        youtubeId: 'sK6T4gT3dCk'
+                    },
+                    {
+                        title: 'Debora',
+                        artist: 'T. Rex',
+                        duration: '3:19',
+                        youtubeId: 'zQ5x4B01V_c'
+                    }
+                ]
+            },
+            'the-shape-of-water': {
+                title: 'The Shape of Water',
+                soundtracks: [
+                    {
+                        title: 'The Shape of Water',
+                        artist: 'Alexandre Desplat',
+                        duration: '2:54',
+                        youtubeId: 'F5N7KHN8sYQ'
+                    },
+                    {
+                        title: 'Elisa\'s Theme',
+                        artist: 'Alexandre Desplat',
+                        duration: '2:37',
+                        youtubeId: '4OcYnuZQv9s'
+                    },
+                    {
+                        title: 'A Princess Without a Voice',
+                        artist: 'Alexandre Desplat',
+                        duration: '1:51',
+                        youtubeId: '3wQ0Vqy2qJc'
+                    }
+                ]
+            },
+            'whiplash': {
+                title: 'Whiplash',
+                soundtracks: [
+                    {
+                        title: 'Whiplash',
+                        artist: 'Hank Levy',
+                        duration: '1:44',
+                        youtubeId: 'HCTU1XvP1Y0'
+                    },
+                    {
+                        title: 'Caravan',
+                        artist: 'Juan Tizol, Duke Ellington',
+                        duration: '8:46',
+                        youtubeId: 'E8Z2YcW2Vk0'
+                    },
+                    {
+                        title: 'Upswingin\'',
+                        artist: 'Justin Hurwitz',
+                        duration: '2:21',
+                        youtubeId: 'm2jD9cNQp4M'
+                    }
+                ]
+            },
+            'dunkirk': {
+                title: 'Dunkirk',
+                soundtracks: [
+                    {
+                        title: 'The Mole',
+                        artist: 'Hans Zimmer',
+                        duration: '5:36',
+                        youtubeId: 'i5V8Xq1wBB8'
+                    },
+                    {
+                        title: 'Supermarine',
+                        artist: 'Hans Zimmer',
+                        duration: '8:03',
+                        youtubeId: '9jDlICk3Qek'
+                    },
+                    {
+                        title: 'Variation 15 (Dunkirk)',
+                        artist: 'Hans Zimmer',
+                        duration: '5:52',
+                        youtubeId: 'i5V8Xq1wBB8'
+                    }
+                ]
+            },
+            'a-star-is-born': {
+                title: 'A Star Is Born',
+                soundtracks: [
+                    {
+                        title: 'Shallow',
+                        artist: 'Lady Gaga, Bradley Cooper',
+                        duration: '3:37',
+                        youtubeId: 'bo_efYhYU2A'
+                    },
+                    {
+                        title: 'Always Remember Us This Way',
+                        artist: 'Lady Gaga',
+                        duration: '3:30',
+                        youtubeId: '6Nww3bBaDxE'
+                    },
+                    {
+                        title: 'I\'ll Never Love Again',
+                        artist: 'Lady Gaga, Bradley Cooper',
+                        duration: '4:41',
+                        youtubeId: 'bnFrKTcSKQ4'
+                    }
+                ]
+            },
+            'the-revenant': {
+                title: 'The Revenant',
+                soundtracks: [
+                    {
+                        title: 'The Revenant Main Theme',
+                        artist: 'Ryuichi Sakamoto, Alva Noto',
+                        duration: '2:41',
+                        youtubeId: 'Jhcfj_5Vg2E'
+                    },
+                    {
+                        title: 'Goodbye to Hawk',
+                        artist: 'Ryuichi Sakamoto, Alva Noto',
+                        duration: '2:14',
+                        youtubeId: 'Xz8v9R4Qb1s'
+                    },
+                    {
+                        title: 'The Bear',
+                        artist: 'Ryuichi Sakamoto, Alva Noto',
+                        duration: '3:41',
+                        youtubeId: 'iXjQ6Q2b8Yc'
+                    }
+                ]
+            },
+            'blade-runner': {
+                title: 'Blade Runner',
+                soundtracks: [
+                    {
+                        title: 'Main Titles',
+                        artist: 'Vangelis',
+                        duration: '3:42',
+                        youtubeId: 'u7qQK2gNqkI'
+                    },
+                    {
+                        title: 'Blade Runner Blues',
+                        artist: 'Vangelis',
+                        duration: '8:54',
+                        youtubeId: 'oN6a1y4EJeA'
+                    },
+                    {
+                        title: 'Tears in Rain',
+                        artist: 'Vangelis',
+                        duration: '3:00',
+                        youtubeId: 'u7qQK2gNqkI'
+                    }
+                ]
+            },
+            'drive': {
+                title: 'Drive',
+                soundtracks: [
+                    {
+                        title: 'Nightcall',
+                        artist: 'Kavinsky',
+                        duration: '4:19',
+                        youtubeId: 'MV_3Dpw-BRY'
+                    },
+                    {
+                        title: 'A Real Hero',
+                        artist: 'College & Electric Youth',
+                        duration: '4:27',
+                        youtubeId: 'vN6cJ-nQ9P4'
+                    },
+                    {
+                        title: 'Under Your Spell',
+                        artist: 'Desire',
+                        duration: '3:52',
+                        youtubeId: 'hS5mJvJq5dM'
+                    }
+                ]
+            },
+            'lotr-fellowship': {
+                title: 'The Lord of the Rings: The Fellowship of the Ring',
+                soundtracks: [
+                    {
+                        title: 'The Fellowship',
+                        artist: 'Howard Shore',
+                        duration: '6:10',
+                        youtubeId: '9bZkp7q19f0'
+                    },
+                    {
+                        title: 'Concerning Hobbits',
+                        artist: 'Howard Shore',
+                        duration: '2:55',
+                        youtubeId: 'nJQ7q5Jf8W4'
+                    },
+                    {
+                        title: 'May It Be',
+                        artist: 'Enya',
+                        duration: '4:20',
+                        youtubeId: 'LTRKeATwu2M'
+                    }
+                ]
+            },
+            'gladiator': {
+                title: 'Gladiator',
+                soundtracks: [
+                    {
+                        title: 'Now We Are Free',
+                        artist: 'Hans Zimmer, Lisa Gerrard',
+                        duration: '4:14',
+                        youtubeId: '0RU7eM3wGh0'
+                    },
+                    {
+                        title: 'The Battle',
+                        artist: 'Hans Zimmer, Lisa Gerrard',
+                        duration: '10:02',
+                        youtubeId: 'IvKDiqeq9d4'
+                    },
+                    {
+                        title: 'Elysium',
+                        artist: 'Hans Zimmer, Lisa Gerrard',
+                        duration: '2:41',
+                        youtubeId: 'Wzn3dPH5sZ8'
+                    }
+                ]
+            },
+            'pirates-caribbean': {
+                title: 'Pirates of the Caribbean',
+                soundtracks: [
+                    {
+                        title: 'He\'s a Pirate',
+                        artist: 'Hans Zimmer, Klaus Badelt',
+                        duration: '3:07',
+                        youtubeId: '6Dakd7EIgBE'
+                    },
+                    {
+                        title: 'The Black Pearl',
+                        artist: 'Hans Zimmer, Klaus Badelt',
+                        duration: '2:16',
+                        youtubeId: 'JfKfW6XpSLw'
+                    },
+                    {
+                        title: 'Will and Elizabeth',
+                        artist: 'Hans Zimmer, Klaus Badelt',
+                        duration: '2:08',
+                        youtubeId: '3VKz6XlS9Y8'
+                    }
+                ]
+            },
+            'harry-potter': {
+                title: 'Harry Potter and the Sorcerer\'s Stone',
+                soundtracks: [
+                    {
+                        title: 'Hedwig\'s Theme',
+                        artist: 'John Williams',
+                        duration: '5:09',
+                        youtubeId: 'Htaj3o3JD8I'
+                    },
+                    {
+                        title: 'Leaving Hogwarts',
+                        artist: 'John Williams',
+                        duration: '3:15',
+                        youtubeId: 'hY7YF2dL2e8'
+                    },
+                    {
+                        title: 'The Quidditch Match',
+                        artist: 'John Williams',
+                        duration: '3:45',
+                        youtubeId: 'V0dNQ26GQn4'
+                    }
+                ]
+            },
+            'empire-strikes-back': {
+                title: 'Star Wars: The Empire Strikes Back',
+                soundtracks: [
+                    {
+                        title: 'The Imperial March (Darth Vader\'s Theme)',
+                        artist: 'John Williams',
+                        duration: '3:02',
+                        youtubeId: '-bzWSJG93P8'
+                    },
+                    {
+                        title: 'Yoda\'s Theme',
+                        artist: 'John Williams',
+                        duration: '3:29',
+                        youtubeId: 'hN0Sq_L1F6I'
+                    },
+                    {
+                        title: 'The Asteroid Field',
+                        artist: 'John Williams',
+                        duration: '4:15',
+                        youtubeId: 'sE1MSCXm2eY'
+                    }
+                ]
+            },
+            'the-matrix': {
+                title: 'The Matrix',
+                soundtracks: [
+                    {
+                        title: 'Clubbed to Death',
+                        artist: 'Rob Dougan',
+                        duration: '7:26',
+                        youtubeId: '8m9Vh_7kF_8'
+                    },
+                    {
+                        title: 'Wake Up',
+                        artist: 'Rage Against the Machine',
+                        duration: '6:04',
+                        youtubeId: 'Bd5k71TtNyU'
+                    },
+                    {
+                        title: 'Spybreak',
+                        artist: 'Propellerheads',
+                        duration: '4:21',
+                        youtubeId: '8m9Vh_7kF_8'
+                    }
+                ]
+            },
+            'avatar': {
+                title: 'Avatar',
+                soundtracks: [
+                    {
+                        title: 'I See You',
+                        artist: 'Leona Lewis',
+                        duration: '4:20',
+                        youtubeId: '6C8CT5iL9bo'
+                    },
+                    {
+                        title: 'Becoming One of The People',
+                        artist: 'James Horner',
+                        duration: '4:10',
+                        youtubeId: '6C8CT5iL9bo'
+                    },
+                    {
+                        title: 'War',
+                        artist: 'James Horner',
+                        duration: '11:21',
+                        youtubeId: '6C8CT5iL9bo'
+                    }
+                ]
+            },
+            'top-gun-maverick': {
+                title: 'Top Gun: Maverick',
+                soundtracks: [
+                    {
+                        title: 'Hold My Hand',
+                        artist: 'Lady Gaga',
+                        duration: '3:45',
+                        youtubeId: '5sM-_dKW43E'
+                    },
+                    {
+                        title: 'Main Theme (Top Gun Anthem)',
+                        artist: 'Harold Faltermeyer, Lady Gaga, Hans Zimmer, Lorne Balfe',
+                        duration: '2:57',
+                        youtubeId: 'oY7X0yq8G5w'
+                    },
+                    {
+                        title: 'I Ain\'t Worried',
+                        artist: 'OneRepublic',
+                        duration: '2:28',
+                        youtubeId: '2eB0t6a5m3M'
+                    }
+                ]
+            },
+            'animal': {
+                title: 'Animal',
+                soundtracks: [
+                    {
+                        title: 'Arjan Vailly',
+                        artist: 'Bhupinder Babbal',
+                        duration: '3:02',
+                        youtubeId: 'tP8qoGQHp8Y'
+                    },
+                    {
+                        title: 'Satranga',
+                        artist: 'Arijit Singh, Shreyas Puranik',
+                        duration: '4:29',
+                        youtubeId: 'J9SF9GvZdnc'
+                    },
+                    {
+                        title: 'Hua Main',
+                        artist: 'Raghav Chaitanya, Pritam',
+                        duration: '4:33',
+                        youtubeId: 'hWQ8L3pU9Qk'
+                    }
+                ]
+            },
+            'brahmastra': {
+                title: 'Brahmāstra: Part One – Shiva',
+                soundtracks: [
+                    {
+                        title: 'Kesariya',
+                        artist: 'Arijit Singh, Pritam',
+                        duration: '4:28',
+                        youtubeId: 'LIBHCji8Sa4'
+                    },
+                    {
+                        title: 'Deva Deva',
+                        artist: 'Arijit Singh, Jonita Gandhi, Pritam',
+                        duration: '4:39',
+                        youtubeId: 'Pk3MMT2n-Tk'
+                    },
+                    {
+                        title: 'Dance Ka Bhoot',
+                        artist: 'Arijit Singh, Pritam',
+                        duration: '4:05',
+                        youtubeId: 'z9hS_5VtRcI'
+                    }
+                ]
+            },
+            'rrr': {
+                title: 'RRR',
+                soundtracks: [
+                    {
+                        title: 'Naatu Naatu',
+                        artist: 'Rahul Sipligunj, Kaala Bhairava, M. M. Keeravani',
+                        duration: '3:36',
+                        youtubeId: 'c4bqEvWg07I'
+                    },
+                    {
+                        title: 'Komuram Bheemudo',
+                        artist: 'Kaala Bhairava, M. M. Keeravani',
+                        duration: '4:14',
+                        youtubeId: 'Jd1XSoai1L8'
+                    },
+                    {
+                        title: 'Dosti',
+                        artist: 'M. M. Keeravani',
+                        duration: '5:40',
+                        youtubeId: 'vL7v1X3k1q4'
+                    }
+                ]
+            }
+
+        };
+
+        // DOM elements
+        const modal = document.getElementById('previewModal');
+        const modalTitle = document.getElementById('modalMovieTitle');
+        const soundtrackList = document.getElementById('soundtrackList');
+        const playerPlaceholder = document.getElementById('playerPlaceholder');
+        const youtubePlayer = document.getElementById('youtubePlayer');
+        let activeVideoId = null;
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', function () {
+            // Add event listeners to movie cards
+            const movieCards = document.querySelectorAll('.movie-card');
+            movieCards.forEach(card => {
+                card.addEventListener('click', function () {
+                    const movieId = this.getAttribute('data-movie');
+                    openModal(movieId);
+                });
+            });
+
+            // Close modal when clicking on close button
+            document.querySelector('.close-btn').addEventListener('click', closeModal);
+
+            // Close modal when clicking outside of modal content
+            modal.addEventListener('click', function (e) {
+                if (e.target === modal) {
+                    closeModal();
+                }
+            });
+        });
+
+        // Open modal with movie soundtrack
+        function openModal(movieId) {
+            const movie = movieData[movieId];
+            if (!movie) return;
+
+            // Set modal title
+            modalTitle.textContent = `${movie.title} - Soundtrack`;
+
+            // Clear previous soundtrack list
+            soundtrackList.innerHTML = '';
+
+            // Create soundtrack items
+            movie.soundtracks.forEach((track, index) => {
+                const trackElement = document.createElement('div');
+                trackElement.className = 'soundtrack-item';
+                trackElement.setAttribute('data-youtube-id', track.youtubeId);
+
+                trackElement.innerHTML = `
+                    <div class="play-btn">
+                        <i class="fas fa-play"></i>
+                    </div>
+                    <div class="soundtrack-info">
+                        <h4 class="soundtrack-title">${track.title}</h4>
+                        <p class="soundtrack-artist">${track.artist}</p>
+                        <p class="soundtrack-duration">${track.duration}</p>
+                    </div>
+                `;
+
+                // Add event listener to play the track
+                trackElement.addEventListener('click', function () {
+                    const youtubeId = this.getAttribute('data-youtube-id');
+                    playTrack(youtubeId, this);
+                });
+
+                soundtrackList.appendChild(trackElement);
+            });
+
+            // Reset player
+            playerPlaceholder.style.display = 'flex';
+            youtubePlayer.style.display = 'none';
+            youtubePlayer.innerHTML = '';
+            activeVideoId = null;
+
+            // Show modal
+            modal.classList.add('active');
+        }
+
+        // Close modal
+        function closeModal() {
+            modal.classList.remove('active');
+            // Stop any playing video
+            if (activeVideoId) {
+                youtubePlayer.innerHTML = '';
+            }
+        }
+
+        // Play selected track
+        function playTrack(youtubeId, element) {
+            // Update active track UI
+            document.querySelectorAll('.soundtrack-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            element.classList.add('active');
+
+            // If same video is clicked again, just show the player
+            if (activeVideoId === youtubeId) {
+                return;
+            }
+
+            // Update active video ID
+            activeVideoId = youtubeId;
+
+            // Hide placeholder and show player
+            playerPlaceholder.style.display = 'none';
+            youtubePlayer.style.display = 'block';
+
+            // Create YouTube iframe
+            youtubePlayer.innerHTML = `
+                <iframe 
+                    width="100%" 
+                    height="100%" 
+                    src="https://www.youtube.com/embed/${youtubeId}?enablejsapi=1&modestbranding=1&rel=0" 
+                    frameborder="0" 
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                    allowfullscreen>
+                </iframe>
+            `;
+        }
+    </script>
+</body>
+
+</html>

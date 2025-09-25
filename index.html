@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CineRate. - Discover Movies</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+    <link rel="icon" href="images/rate-movie_16310584.png" type="image/png">
+
+</head>
+
+<body>
+    <div id="particles-js"></div>
+    <div class="corner-light top-left"></div>
+    <div class="corner-light top-right"></div>
+    <div class="corner-light bottom-left"></div>
+    <div class="corner-light bottom-right"></div>
+
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <a href="index.html" style="text-decoration: none;">
+                    <div class="logo">Cine<span style="color: rgb(252, 252, 252);">Rate</span></div>
+                </a>
+                <nav class="navbar">
+
+                    <div class="hamburger" id="hamburger">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+
+                    <div class="nav-links" id="nav-links">
+                        <a href="#" class="nav-link active" data-section="home">Home</a>
+                        <a href="#" class="nav-link" data-section="watchlist">Watchlist</a>
+                        <a href="triviachallenge.html" class="nav-link-1">Trivia Challenge</a>
+                        <a href="trailerpreview.html" class="nav-link-1">Trailer Preview</a>
+                        <a href="cinespin.html" class="nav-link-1">CineSpin</a>
+                        <a href="soundtrack.html" class="nav-link-1">Soundtrack</a>
+                    </div>
+                    <div class="search-container">
+                        <input type="text" class="search-input" id="search-input" placeholder="Search movies...">
+                        <button class="search-btn" id="search-btn"><i class="fas fa-search"></i></button>
+                    </div>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <div id="home-section">
+            <div class="carousel-container">
+                <div class="carousel" id="trending-carousel"></div>
+                <div class="carousel-controls">
+                    <button class="carousel-btn" id="carousel-prev"><i class="fas fa-chevron-left"></i></button>
+                    <button class="carousel-btn" id="carousel-next"><i class="fas fa-chevron-right"></i></button>
+                </div>
+            </div>
+
+            <h2 class="section-title">Action Movies</h2>
+            <div class="movies-grid" id="action-grid"></div>
+
+            <h2 class="section-title">Comedy Movies</h2>
+            <div class="movies-grid" id="comedy-grid"></div>
+
+            <h2 class="section-title">Drama Movies</h2>
+            <div class="movies-grid" id="drama-grid"></div>
+
+            <h2 class="section-title">Sci-Fi Movies</h2>
+            <div class="movies-grid" id="sci-fi-grid"></div>
+        </div>
+
+        <div class="movie-details" id="movie-details"></div>
+
+        <section id="watchlist-section" style="display: none;">
+            <h2 class="section-title">Your Watchlist</h2>
+            <div class="movies-grid" id="watchlist-grid"></div>
+        </section>
+
+        <div class="search-results-section" id="search-results-section">
+            <h2 class="section-title">Search Results</h2>
+            <div class="movies-grid" id="search-results-grid"></div>
+            <div class="loader" id="search-loader"></div>
+            <button class="btn btn-primary" id="back-to-home" style="margin: 20px auto; display: block;">Back to
+                Home</button>
+        </div>
+
+        <div class="fact-generator">
+            <h2 class="section-title">Did You Know?</h2>
+            <div class="fact-container">
+                <span class="fact-number"></span>
+                <p class="fact-text" id="fact-text">Click the button below to discover a random movie fact!</p>
+            </div>
+            <div class="language-toggle">
+                <button class="lang-btn active" id="english-btn">English</button>
+                <button class="lang-btn" id="hindi-btn">Hindi</button>
+            </div>
+            <div class="fact-controls">
+                <button class="btn btn-primary" id="new-fact-btn">New Fact</button>
+                <button class="btn btn-secondary" id="whatsapp-btn">Share on WhatsApp</button>
+            </div>
+            <script>
+                function initFactGenerator() {
+                    const facts = {
+                        "english": [
+                            "The famous chestburster scene in Alien was so shocking that the actors had no idea it was going to happen. Their reactions of horror are genuine.",
+                            "In The Dark Knight, Heath Ledger actually insisted on being locked in a jail cell for a month to develop his Joker character.",
+                            "The iconic 'I'm flying' scene in Titanic was not in the original script. It was suggested by James Cameron during filming.",
+                            "The rotating hallway fight scene in Inception was achieved with practical effects, not CGI. The set was actually built to rotate.",
+                            "Stanley Kubrick shot 127 takes of Jack Nicholson breaking down the door with an axe in The Shining, frustrating Shelley Duvall to the point of exhaustion."
+                        ],
+                        "hindi": [
+                            "शोले फिल्म का गब्बर सिंह रोल पहले अमिताभ बच्चन को ऑफर किया गया था, लेकिन उन्होंने इनकार कर दिया।",
+                            "लगे रहो मुन्ना भाई फिल्म में सर्किट का किरदार असल में एक असली ऑटो ड्राइवर ने निभाया था जिसे राजकुमार हिरानी ने मुंबई की सड़कों पर देखा था।",
+                            "3 इडियट्स फिल्म में फुनसुक वांगडू का घर वास्तव में लद्दाख में नहीं बल्कि एक स्टूडियो में बनाया गया सेट था।",
+                            "दिलवाले दुल्हनिया ले जायेंगे फिल्म का अंतिम दृश्य जहां राज और सिमरन मिलते हैं, वह स्विट्जरलैंड में नहीं बल्कि भारत के हिमाचल प्रदेश में फिल्माया गया था।",
+                            "बाहुबली फिल्म के युद्ध के दृश्यों को फिल्माने में 120 दिन लगे और इसमें 2000 कलाकारों ने भाग लिया।"
+                        ]
+                    };
+
+                    // ✅ Required element references (missing in your code)
+                    const factText = document.getElementById('fact-text');
+                    const factNumber = document.querySelector('.fact-number');
+                    const newFactBtn = document.getElementById('new-fact-btn');
+                    const whatsappBtn = document.getElementById('whatsapp-btn');
+                    const englishBtn = document.getElementById('english-btn');
+                    const hindiBtn = document.getElementById('hindi-btn');
+
+                    let currentLanguage = 'english';
+                    let currentFactIndex = 0;
+
+                    function getRandomFact() {
+                        const factArray = facts[currentLanguage];
+                        if (!factArray || factArray.length === 0) {
+                            factText.textContent = "No facts available.";
+                            return;
+                        }
+
+                        factText.classList.remove('show');
+
+                        setTimeout(() => {
+                            const randomIndex = Math.floor(Math.random() * factArray.length);
+                            factText.textContent = factArray[randomIndex];
+
+                            currentFactIndex++;
+                            factNumber.textContent = currentFactIndex;
+                            factNumber.classList.add('bounce');
+                            setTimeout(() => factNumber.classList.remove('bounce'), 1000);
+
+                            setTimeout(() => factText.classList.add('show'), 100);
+                        }, 500);
+                    }
+
+                    function shareOnWhatsApp() {
+                        const fact = factText.textContent;
+                        if (!fact || fact === "Click the button below to discover a random movie fact!") {
+                            alert("Please generate a fact first!");
+                            return;
+                        }
+
+                        const text = `Check out this movie fact: ${fact} - Discover more at MovieFlix.com`;
+                        const encodedText = encodeURIComponent(text);
+                        const whatsappUrl = `https://wa.me/?text=${encodedText}`;
+
+                        window.open(whatsappUrl, '_blank');
+                    }
+
+                    newFactBtn.addEventListener('click', getRandomFact);
+                    whatsappBtn.addEventListener('click', shareOnWhatsApp);
+
+                    englishBtn.addEventListener('click', function () {
+                        if (currentLanguage !== 'english') {
+                            currentLanguage = 'english';
+                            englishBtn.classList.add('active');
+                            hindiBtn.classList.remove('active');
+                            getRandomFact();
+                        }
+                    });
+
+                    hindiBtn.addEventListener('click', function () {
+                        if (currentLanguage !== 'hindi') {
+                            currentLanguage = 'hindi';
+                            hindiBtn.classList.add('active');
+                            englishBtn.classList.remove('active');
+                            getRandomFact();
+                        }
+                    });
+
+                    getRandomFact();
+                }
+
+                // ✅ Initialize after DOM load
+                document.addEventListener('DOMContentLoaded', function () {
+                    initFactGenerator();
+                });
+
+            </script>
+        </div>
+
+
+    </main>
+
+    <div class="notification" id="notification">
+        Movie added to your watchlist!
+    </div>
+
+    <!-- Footer -->
+
+    <footer>
+        <div class="container" style="background-color: linear-gradient(135deg, #141e30, #243b55);">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>About CineRate</h3>
+                    <p>Your go-to platform for discovering, rating, and reviewing movies. Join our community of film
+                        enthusiasts!</p>
+                </div>
+
+                <div class="footer-section">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="#">Home</a></li>
+                        <li><a href="#">Trending</a></li>
+                        <!-- <li><a href="#" class="nav-link" data-section="watchlist">Watchlist</a></li> -->
+                        <li><a href="soundtrack.html" class="nav-link-1">Soundtrack</a></li>
+                        <li><a href="triviachallenge.html" class="nav-link-1">Trivia Challenge</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-section">
+                    <h3>Connect With Us</h3>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2025 <span style="color: #79b8f3;">Cine</span>Rate. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+
+    <!-- <script src="script.js"></script> -->
+    <script src="script.js"></script>
+    <script>
+        const hamburger = document.getElementById("hamburger");
+        const navLinksContainer = document.getElementById("nav-links");
+
+        hamburger.addEventListener("click", () => {
+            navLinksContainer.classList.toggle("show");
+        });
+
+    </script>
+</body>
+
+</html>
