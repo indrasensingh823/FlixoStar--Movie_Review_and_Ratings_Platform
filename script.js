@@ -1848,7 +1848,7 @@ drama: [
                     return;
                 }
                 
-                const text = `Check out this movie fact: ${fact} - Discover more at MovieFlix.com`;
+                const text = `Check out this movie fact: ${fact} - Discover more at https://flixostar.netlify.app/`;
                 const encodedText = encodeURIComponent(text);
                 const whatsappUrl = `https://wa.me/?text=${encodedText}`;
                 
