@@ -1,6 +1,6 @@
 # 🎬 CineRate - Movie Review & Rating Platform
 
-![CineRate Banner](https://via.placeholder.com/1200x400/6a11cb/2575fc?text=CineRate+Movie+Platform)
+<img width="1894" height="974" alt="Image" src="https://github.com/user-attachments/assets/0c634f1d-925d-481c-95d7-0aff1fbcd422" />
 
 A sophisticated, responsive movie review and rating platform with a beautiful gradient dark theme. Discover, rate, and review movies from various categories and integrate with the OMDB API for real-time movie data.
 
@@ -37,13 +37,9 @@ A sophisticated, responsive movie review and rating platform with a beautiful gr
 
 ## 📸 Screenshots
 
-| Homepage | Movie Details | Search Results |
-|----------|---------------|----------------|
-| ![Home](https://via.placeholder.com/300x200/1e1e1e/ffffff?text=Home+Screen) | ![Details](https://via.placeholder.com/300x200/1e1e1e/ffffff?text=Movie+Details) | ![Search](https://via.placeholder.com/300x200/1e1e1e/ffffff?text=Search+Results) |
-
-| Categories | Watchlist | Add Movie |
-|------------|-----------|-----------|
-| ![Categories](https://via.placeholder.com/300x200/1e1e1e/ffffff?text=Categories) | ![Watchlist](https://via.placeholder.com/300x200/1e1e1e/ffffff?text=Watchlist) | ![Add Movie](https://via.placeholder.com/300x200/1e1e1e/ffffff?text=Add+Movie) |
+| Homepage | Movie Details | Search Results | Watchlist |
+|----------|---------------|----------------|-----------|
+|<img width="1894" height="974" alt="Image" src="https://github.com/user-attachments/assets/0c634f1d-925d-481c-95d7-0aff1fbcd422" /> | <img width="1901" height="987" alt="Image" src="https://github.com/user-attachments/assets/fad62549-dae5-430d-a2dd-714c02495d46" /> |<img width="1898" height="988" alt="Image" src="https://github.com/user-attachments/assets/c05b3848-96c9-4d53-af59-713c605133ba" />| <img width="1904" height="977" alt="Image" src="https://github.com/user-attachments/assets/749e897a-2f80-4d1e-9a09-3632fb7b470d" /> |
 
 ## 🛠️ Technology Stack
 
@@ -128,10 +124,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 <div align="center">
 Made with ❤️ by Indrasen Singh
-https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white
-https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white
-https://img.shields.io/badge/Portfolio-FF7139?style=for-the-badge&logo=Firefox-Browser&logoColor=white
-
+</br>
 If you like this project, don't forget to give it a ⭐!
 
-</div> ```
+</div> 
